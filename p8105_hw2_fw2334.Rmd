@@ -11,7 +11,7 @@ library(tidyverse)
 library(readxl)
 ```
 
-#Problem 1
+# Problem 1
 ```{r}
 trash_data = read_excel(
   path = "data/TrashWheel2019.xlsx",
@@ -26,7 +26,7 @@ trash_data = read_excel(
 
 ```
 
-###Creating precipitation datasets
+### Creating precipitation datasets
 ```{r}
 precip_2017 = read_excel(
   path = "data/TrashWheel2019.xlsx",
@@ -44,5 +44,12 @@ precip_2018 = read_excel(
   janitor::clean_names() %>% 
   drop_na(total) %>% 
   rename(precip18 = total)
+```
+
+
+### Joining precipitation datasets
+```{r}
+precip_data = 
+  full_join(precip_2017, precip_2018, by = "month")
 ```
 

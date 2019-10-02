@@ -369,7 +369,8 @@ summary {
 </div>
 
 
-<p>#Problem 1</p>
+<div id="problem-1" class="section level1">
+<h1>Problem 1</h1>
 <pre class="r"><code>trash_data = read_excel(
   path = &quot;data/TrashWheel2019.xlsx&quot;,
   sheet = &quot;Mr. Trash Wheel&quot;,
@@ -380,7 +381,8 @@ summary {
     sports_balls = as.integer(sports_balls),
     round(sports_balls, digits = 0)
   )</code></pre>
-<p>###Creating precipitation datasets</p>
+<div id="creating-precipitation-datasets" class="section level3">
+<h3>Creating precipitation datasets</h3>
 <pre class="r"><code>precip_2017 = read_excel(
   path = &quot;data/TrashWheel2019.xlsx&quot;,
   sheet = &quot;2017 Precipitation&quot;,
@@ -397,6 +399,13 @@ precip_2018 = read_excel(
   janitor::clean_names() %&gt;% 
   drop_na(total) %&gt;% 
   rename(precip18 = total)</code></pre>
+</div>
+<div id="joining-precipitation-datasets" class="section level3">
+<h3>Joining precipitation datasets</h3>
+<pre class="r"><code>precip_data = 
+  full_join(precip_2017, precip_2018, by = &quot;month&quot;)</code></pre>
+</div>
+</div>
 
 
 
