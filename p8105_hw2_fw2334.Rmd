@@ -1,0 +1,48 @@
+---
+title: "p8105_hw2_fw2334"
+author: "Frances Williams"
+date: "9/30/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+```
+
+#Problem 1
+```{r}
+trash_data = read_excel(
+  path = "data/TrashWheel2019.xlsx",
+  sheet = "Mr. Trash Wheel",
+  range = "A2:N406") %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(
+    sports_balls = as.integer(sports_balls),
+    round(sports_balls, digits = 0)
+  )
+
+```
+
+###Creating precipitation datasets
+```{r}
+precip_2017 = read_excel(
+  path = "data/TrashWheel2019.xlsx",
+  sheet = "2017 Precipitation",
+  range = "A2:B14") %>%
+  janitor::clean_names() %>% 
+  drop_na(total) %>% 
+  rename(precip17 = total)
+
+    
+precip_2018 = read_excel(
+  path = "data/TrashWheel2019.xlsx",
+  sheet = "2018 Precipitation",
+  range = "A2:B14") %>%
+  janitor::clean_names() %>% 
+  drop_na(total) %>% 
+  rename(precip18 = total)
+```
+
