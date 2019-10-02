@@ -11,7 +11,9 @@ library(tidyverse)
 library(readxl)
 ```
 
-# Problem 1
+# **PROBLEM 1**
+
+## Creating datasets
 ```{r}
 trash_data = read_excel(
   path = "data/TrashWheel2019.xlsx",
@@ -26,7 +28,8 @@ trash_data = read_excel(
 
 ```
 
-### Creating precipitation datasets
+
+#### *Creating precipitation datasets*
 ```{r}
 precip_2017 = read_excel(
   path = "data/TrashWheel2019.xlsx",
@@ -47,9 +50,67 @@ precip_2018 = read_excel(
 ```
 
 
-### Joining precipitation datasets
+#### *Joining precipitation datasets*
 ```{r}
 precip_data = 
-  full_join(precip_2017, precip_2018, by = "month")
+  full_join(precip_2017, precip_2018, by = "month") %>% 
+  mutate(
+    month = month.name
+  )
 ```
+
+## Description of the datasets
+The Mr. Trash Wheel dataset has `r nrow(trash_data)` observations. 
+The total amount of precipitation in 2018 was `r sum(pull(precip_2018, precip18))` inches.
+The median number of sports balls in a dumpster in 2017 was `r median(pull(trash_data, sports_balls))`. 
+
+
+
+# **PROBLEM 2**
+
+## Creating datasets
+
+#### *pols dataset*
+```{r}
+pols_df = read_csv(file = "./data/pols-month.csv") %>%
+  separate(mon, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(
+    month = month.abb[as.numeric(month)],
+    month = str_to_lower(month),
+    president = ifelse(prez_dem == 1, "dem", "gop")) %>% 
+  select(-prez_gop, -prez_dem, -day)
+```
+
+#### *snp dataset*
+```{r}
+snp_df = read_csv(file = "./data/snp.csv") %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/") %>% 
+  select(-day) %>% 
+  mutate(
+    month = month.abb[as.numeric(month)],
+    month = str_to_lower(month)) %>% 
+  arrange(year, month)
+```
+
+#### *unemployment dataset*
+```{r}
+unemployment_df = read_csv(file = "./data/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    jan:dec,
+    names_to = "month",
+    values_to = "unemployment") %>% 
+  mutate(year = as.character(year)) %>% 
+  arrange(year, month)
+```
+
+## Joining datasets
+```{r}
+pols_snp = 
+  left_join(pols_df, snp_df, by = c("year", "month"))
+
+pols_snp_unemp = 
+  left_join(pols_snp, unemployment_df, by = c("year", "month"))
+```
+
 

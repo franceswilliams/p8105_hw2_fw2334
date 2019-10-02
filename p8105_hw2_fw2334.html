@@ -370,7 +370,9 @@ summary {
 
 
 <div id="problem-1" class="section level1">
-<h1>Problem 1</h1>
+<h1><strong>PROBLEM 1</strong></h1>
+<div id="creating-datasets" class="section level2">
+<h2>Creating datasets</h2>
 <pre class="r"><code>trash_data = read_excel(
   path = &quot;data/TrashWheel2019.xlsx&quot;,
   sheet = &quot;Mr. Trash Wheel&quot;,
@@ -381,8 +383,8 @@ summary {
     sports_balls = as.integer(sports_balls),
     round(sports_balls, digits = 0)
   )</code></pre>
-<div id="creating-precipitation-datasets" class="section level3">
-<h3>Creating precipitation datasets</h3>
+<div id="creating-precipitation-datasets" class="section level4">
+<h4><em>Creating precipitation datasets</em></h4>
 <pre class="r"><code>precip_2017 = read_excel(
   path = &quot;data/TrashWheel2019.xlsx&quot;,
   sheet = &quot;2017 Precipitation&quot;,
@@ -400,10 +402,96 @@ precip_2018 = read_excel(
   drop_na(total) %&gt;% 
   rename(precip18 = total)</code></pre>
 </div>
-<div id="joining-precipitation-datasets" class="section level3">
-<h3>Joining precipitation datasets</h3>
+<div id="joining-precipitation-datasets" class="section level4">
+<h4><em>Joining precipitation datasets</em></h4>
 <pre class="r"><code>precip_data = 
-  full_join(precip_2017, precip_2018, by = &quot;month&quot;)</code></pre>
+  full_join(precip_2017, precip_2018, by = &quot;month&quot;) %&gt;% 
+  mutate(
+    month = month.name
+  )</code></pre>
+</div>
+</div>
+<div id="description-of-the-datasets" class="section level2">
+<h2>Description of the datasets</h2>
+<p>The Mr. Trash Wheel dataset has 344 observations. The total amount of precipitation in 2018 was 70.33 inches. The median number of sports balls in a dumpster in 2017 was 8.</p>
+</div>
+</div>
+<div id="problem-2" class="section level1">
+<h1><strong>PROBLEM 2</strong></h1>
+<div id="creating-datasets-1" class="section level2">
+<h2>Creating datasets</h2>
+<div id="pols-dataset" class="section level4">
+<h4><em>pols dataset</em></h4>
+<pre class="r"><code>pols_df = read_csv(file = &quot;./data/pols-month.csv&quot;) %&gt;%
+  separate(mon, into = c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;), sep = &quot;-&quot;) %&gt;% 
+  mutate(
+    month = month.abb[as.numeric(month)],
+    month = str_to_lower(month),
+    president = ifelse(prez_dem == 1, &quot;dem&quot;, &quot;gop&quot;)) %&gt;% 
+  select(-prez_gop, -prez_dem, -day)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   mon = col_date(format = &quot;&quot;),
+##   prez_gop = col_double(),
+##   gov_gop = col_double(),
+##   sen_gop = col_double(),
+##   rep_gop = col_double(),
+##   prez_dem = col_double(),
+##   gov_dem = col_double(),
+##   sen_dem = col_double(),
+##   rep_dem = col_double()
+## )</code></pre>
+</div>
+<div id="snp-dataset" class="section level4">
+<h4><em>snp dataset</em></h4>
+<pre class="r"><code>snp_df = read_csv(file = &quot;./data/snp.csv&quot;) %&gt;% 
+  separate(date, into = c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), sep = &quot;/&quot;) %&gt;% 
+  select(-day) %&gt;% 
+  mutate(
+    month = month.abb[as.numeric(month)],
+    month = str_to_lower(month)) %&gt;% 
+  arrange(year, month)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   date = col_character(),
+##   close = col_double()
+## )</code></pre>
+</div>
+<div id="unemployment-dataset" class="section level4">
+<h4><em>unemployment dataset</em></h4>
+<pre class="r"><code>unemployment_df = read_csv(file = &quot;./data/unemployment.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  pivot_longer(
+    jan:dec,
+    names_to = &quot;month&quot;,
+    values_to = &quot;unemployment&quot;) %&gt;% 
+  mutate(year = as.character(year)) %&gt;% 
+  arrange(year, month)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   Year = col_double(),
+##   Jan = col_double(),
+##   Feb = col_double(),
+##   Mar = col_double(),
+##   Apr = col_double(),
+##   May = col_double(),
+##   Jun = col_double(),
+##   Jul = col_double(),
+##   Aug = col_double(),
+##   Sep = col_double(),
+##   Oct = col_double(),
+##   Nov = col_double(),
+##   Dec = col_double()
+## )</code></pre>
+</div>
+</div>
+<div id="joining-datasets" class="section level2">
+<h2>Joining datasets</h2>
+<pre class="r"><code>pols_snp = 
+  left_join(pols_df, snp_df, by = c(&quot;year&quot;, &quot;month&quot;))
+
+pols_snp_unemp = 
+  left_join(pols_snp, unemployment_df, by = c(&quot;year&quot;, &quot;month&quot;))</code></pre>
 </div>
 </div>
 
