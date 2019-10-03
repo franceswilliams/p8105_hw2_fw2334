@@ -380,8 +380,8 @@ summary {
   janitor::clean_names() %&gt;% 
   drop_na(dumpster) %&gt;% 
   mutate(
-    sports_balls = as.integer(sports_balls),
-    round(sports_balls, digits = 0)
+    sports_balls = round(sports_balls, digits = 0),
+    sports_balls = as.integer(sports_balls)
   )</code></pre>
 <div id="creating-precipitation-datasets" class="section level4">
 <h4><em>Creating precipitation datasets</em></h4>
@@ -391,7 +391,7 @@ summary {
   range = &quot;A2:B14&quot;) %&gt;%
   janitor::clean_names() %&gt;% 
   drop_na(total) %&gt;% 
-  rename(precip17 = total)
+  mutate(year = 2017)
 
     
 precip_2018 = read_excel(
@@ -400,20 +400,20 @@ precip_2018 = read_excel(
   range = &quot;A2:B14&quot;) %&gt;%
   janitor::clean_names() %&gt;% 
   drop_na(total) %&gt;% 
-  rename(precip18 = total)</code></pre>
+  mutate(year = 2018)</code></pre>
 </div>
 <div id="joining-precipitation-datasets" class="section level4">
 <h4><em>Joining precipitation datasets</em></h4>
 <pre class="r"><code>precip_data = 
-  full_join(precip_2017, precip_2018, by = &quot;month&quot;) %&gt;% 
+  full_join(precip_2017, precip_2018, by = c(&quot;year&quot;, &quot;month&quot;, &quot;total&quot;)) %&gt;% 
   mutate(
-    month = month.name
+    month = month.name[month]
   )</code></pre>
 </div>
 </div>
 <div id="description-of-the-datasets" class="section level2">
 <h2>Description of the datasets</h2>
-<p>The Mr. Trash Wheel dataset has 344 observations. The total amount of precipitation in 2018 was 70.33 inches. The median number of sports balls in a dumpster in 2017 was 8.</p>
+<p>The <code>Mr. Trash Wheel</code> dataset has 344 observations, and the merged <code>precipitation</code> dataset has 24 observations. The total amount of precipitation in 2018 was 70.33 inches, and the median number of sports balls in a dumpster in 2017 was 8.</p>
 </div>
 </div>
 <div id="problem-2" class="section level1">
@@ -495,6 +495,7 @@ pols_snp_unemp =
 </div>
 <div id="description-of-datasets" class="section level2">
 <h2>Description of datasets</h2>
+<p>The <code>pols_df</code> dataset includes data on the number of politicians by political party (dem/gop) and position (sen/rep/gov/prez) by month and year. The <code>snp_df</code> dataset contains the closing values of the S&amp;P stock index by month and year. The <code>unemployment_df</code> dataset contains percent unemployment by month and year. The merged dataset has 822 observations and 11 variables; each row of data is for a single month, and the data range from 1947 to 2015. Key variables linking the datasets are <code>year</code> and <code>month</code>.</p>
 </div>
 </div>
 <div id="problem-3" class="section level1">
@@ -522,66 +523,62 @@ pols_snp_unemp =
 <h2>Table: Olivia name rank by year and ethnicity</h2>
 <pre class="r"><code>olivia_table = 
   babynames_df %&gt;% 
-  select(year_of_birth, ethnicity, childs_first_name, rank) %&gt;% 
   filter(childs_first_name == &quot;Olivia&quot;) %&gt;% 
+  select(year_of_birth, ethnicity, rank) %&gt;%
   pivot_wider(
     names_from = year_of_birth,
-    values_from = rank) 
+    values_from = rank) %&gt;% 
+  select(ethnicity, `2011`, `2012`, `2013`,`2014`, `2015`, `2016`)
 
 knitr::kable(olivia_table)</code></pre>
 <table>
 <thead>
 <tr class="header">
 <th align="left">ethnicity</th>
-<th align="left">childs_first_name</th>
-<th align="right">2016</th>
-<th align="right">2015</th>
-<th align="right">2014</th>
-<th align="right">2013</th>
-<th align="right">2012</th>
 <th align="right">2011</th>
+<th align="right">2012</th>
+<th align="right">2013</th>
+<th align="right">2014</th>
+<th align="right">2015</th>
+<th align="right">2016</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">asian and pacific islander</td>
-<td align="left">Olivia</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">3</td>
 <td align="right">4</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="left">black non hispanic</td>
-<td align="left">Olivia</td>
-<td align="right">8</td>
-<td align="right">4</td>
+<td align="right">10</td>
 <td align="right">8</td>
 <td align="right">6</td>
 <td align="right">8</td>
-<td align="right">10</td>
+<td align="right">4</td>
+<td align="right">8</td>
 </tr>
 <tr class="odd">
 <td align="left">hispanic</td>
-<td align="left">Olivia</td>
-<td align="right">13</td>
-<td align="right">16</td>
-<td align="right">16</td>
-<td align="right">22</td>
-<td align="right">22</td>
 <td align="right">18</td>
+<td align="right">22</td>
+<td align="right">22</td>
+<td align="right">16</td>
+<td align="right">16</td>
+<td align="right">13</td>
 </tr>
 <tr class="even">
 <td align="left">white non hispanic</td>
-<td align="left">Olivia</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">4</td>
 <td align="right">2</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
 </tr>
 </tbody>
 </table>
