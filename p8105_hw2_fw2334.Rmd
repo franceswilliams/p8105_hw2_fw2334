@@ -133,9 +133,10 @@ babynames_df = read_csv(file = "./data/Popular_Baby_Names.csv") %>%
 ```
 
 
-## Table: Olivia
+## Table: Olivia name rank by year and ethnicity
 ```{r}
-olivia_table = babynames_df %>% 
+olivia_table = 
+  babynames_df %>% 
   select(year_of_birth, ethnicity, childs_first_name, rank) %>% 
   filter(childs_first_name == "Olivia") %>% 
   pivot_wider(
@@ -143,5 +144,19 @@ olivia_table = babynames_df %>%
     values_from = rank) 
 
 knitr::kable(olivia_table)
+```
+
+## Scatterplot
+```{r}
+babynames_scatter =
+  babynames_df %>%
+  filter(
+    ethnicity == "white non hispanic", 
+    year_of_birth == 2016,
+    gender == "male")
+
+ggplot(babynames_scatter, aes(x = rank, y = count)) +
+  geom_point()
+  
 ```
 
