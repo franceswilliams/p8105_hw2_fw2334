@@ -493,6 +493,98 @@ precip_2018 = read_excel(
 pols_snp_unemp = 
   left_join(pols_snp, unemployment_df, by = c(&quot;year&quot;, &quot;month&quot;))</code></pre>
 </div>
+<div id="description-of-datasets" class="section level2">
+<h2>Description of datasets</h2>
+</div>
+</div>
+<div id="problem-3" class="section level1">
+<h1><strong>PROBLEM 3</strong></h1>
+<pre class="r"><code>babynames_df = read_csv(file = &quot;./data/Popular_Baby_Names.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(
+    childs_first_name = str_to_title(childs_first_name),
+    gender = str_to_lower(gender),
+    ethnicity = str_to_lower(ethnicity),
+    ethnicity = replace(ethnicity, ethnicity == &quot;asian and paci&quot;, &quot;asian and pacific islander&quot;),
+    ethnicity = replace(ethnicity, ethnicity == &quot;black non hisp&quot;, &quot;black non hispanic&quot;),
+    ethnicity = replace(ethnicity, ethnicity == &quot;white non hisp&quot;, &quot;white non hispanic&quot;)) %&gt;% 
+  distinct()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   `Year of Birth` = col_double(),
+##   Gender = col_character(),
+##   Ethnicity = col_character(),
+##   `Child&#39;s First Name` = col_character(),
+##   Count = col_double(),
+##   Rank = col_double()
+## )</code></pre>
+<div id="table-olivia" class="section level2">
+<h2>Table: Olivia</h2>
+<pre class="r"><code>olivia_table = babynames_df %&gt;% 
+  select(year_of_birth, ethnicity, childs_first_name, rank) %&gt;% 
+  filter(childs_first_name == &quot;Olivia&quot;) %&gt;% 
+  pivot_wider(
+    names_from = year_of_birth,
+    values_from = rank) 
+
+knitr::kable(olivia_table)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">ethnicity</th>
+<th align="left">childs_first_name</th>
+<th align="right">2016</th>
+<th align="right">2015</th>
+<th align="right">2014</th>
+<th align="right">2013</th>
+<th align="right">2012</th>
+<th align="right">2011</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">asian and pacific islander</td>
+<td align="left">Olivia</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">black non hispanic</td>
+<td align="left">Olivia</td>
+<td align="right">8</td>
+<td align="right">4</td>
+<td align="right">8</td>
+<td align="right">6</td>
+<td align="right">8</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="left">hispanic</td>
+<td align="left">Olivia</td>
+<td align="right">13</td>
+<td align="right">16</td>
+<td align="right">16</td>
+<td align="right">22</td>
+<td align="right">22</td>
+<td align="right">18</td>
+</tr>
+<tr class="even">
+<td align="left">white non hispanic</td>
+<td align="left">Olivia</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">2</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 

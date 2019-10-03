@@ -113,4 +113,35 @@ pols_snp_unemp =
   left_join(pols_snp, unemployment_df, by = c("year", "month"))
 ```
 
+## Description of datasets
+
+
+
+# **PROBLEM 3**
+
+```{r}
+babynames_df = read_csv(file = "./data/Popular_Baby_Names.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    childs_first_name = str_to_title(childs_first_name),
+    gender = str_to_lower(gender),
+    ethnicity = str_to_lower(ethnicity),
+    ethnicity = replace(ethnicity, ethnicity == "asian and paci", "asian and pacific islander"),
+    ethnicity = replace(ethnicity, ethnicity == "black non hisp", "black non hispanic"),
+    ethnicity = replace(ethnicity, ethnicity == "white non hisp", "white non hispanic")) %>% 
+  distinct()
+```
+
+
+## Table: Olivia
+```{r}
+olivia_table = babynames_df %>% 
+  select(year_of_birth, ethnicity, childs_first_name, rank) %>% 
+  filter(childs_first_name == "Olivia") %>% 
+  pivot_wider(
+    names_from = year_of_birth,
+    values_from = rank) 
+
+knitr::kable(olivia_table)
+```
 
